@@ -87,14 +87,15 @@
 
         #camera-preview {
             position: absolute;
-            top: 15px;
-            right: 15px;
-            width: 120px;
-            height: 90px;
-            border: 2px solid rgba(255, 0, 0, 0.5);
+            top: 30px;
+            right: 30px;
+            width: 320px;
+            height: 240px;
+            border: 3px solid rgba(255, 0, 0, 0.8);
             transform: scaleX(-1);
-            opacity: 0.6;
-            border-radius: 8px;
+            opacity: 0.9;
+            border-radius: 14px;
+            background: black;
         }
 
         #error-log {
@@ -451,6 +452,8 @@
             const canvas = document.getElementById('camera-preview');
             const ctx = canvas.getContext('2d');
             const statusDiv = document.getElementById('status');
+            canvas.width = 320;
+            canvas.height = 240;
 
             let frameCnt = 0;
             const hands = new Hands({ locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` });
@@ -458,6 +461,8 @@
 
             hands.onResults(results => {
                 ctx.clearRect(0, 0, 100, 75); ctx.drawImage(results.image, 0, 0, 100, 75);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
 
                 if (results.multiHandLandmarks.length > 0) {
                     const lm = results.multiHandLandmarks[0];
@@ -488,10 +493,12 @@
 
             const cameraUtils = new Camera(video, {
                 onFrame: async () => {
-                    frameCnt++; if (frameCnt % 3 !== 0) return;
                     await hands.send({ image: video });
-                }, width: 320, height: 240
+                },
+                width: 640,
+                height: 480
             });
+
             cameraUtils.start();
         }
 
